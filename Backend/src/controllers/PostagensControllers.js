@@ -91,3 +91,81 @@ export const showall = async (request, response) => {
        response.status(500).json({ msg: "Erro ao buscar postagens" });
      }
    };
+
+   export const deleteinformacoes = async (request, response) => {
+
+    const id = request.params.id 
+    console.log(id)
+     try {
+       const postagens = await Posts.destroy({
+         where: {id}
+       });
+ 
+       response.status(500).json({ msg: "Posts deletado" });
+   
+     } catch (error) {
+       response.status(500).json({ msg: "Erro ao buscar postagens" });
+     }
+   };
+ export const atualizarinformacoes = async (request, response) => {
+ 
+    const id = request.params.id 
+    const bodyValidation = createSchema.safeParse(request.body)
+     
+    if(!bodyValidation.success){
+      response.status(400).json({msg: "Os dados recebidos do corpo são invalidos", detalhes: bodyValidation.error})
+      return
+    }
+  
+    const { titulo, conteudo,autor,imagem } = request.body;
+ 
+  
+    if (!titulo) {
+      response.status(400).json({ err: "A tarefa é obirgatoria" });
+      return;
+    }
+    if (!conteudo) {
+      response.status(400).json({ err: "A descricao é obirgatoria" });
+      return;
+    }
+    if (!autor) {
+      response.status(400).json({ err: "A descricao é obirgatoria" });
+      return;
+    }
+ 
+ 
+ 
+  
+    const novopost = {
+      titulo,
+      conteudo,
+      autor,
+      imagem,
+    };
+    try {
+      await Posts.update(novopost , { where:{id} });
+      response.status(201).json({ msg: "Posts Atualizado" });
+    } catch (error) {
+      console.error(error);
+      response.status(500).json({ Err: "Erro ao Atualizado os posts" });
+    }
+   };
+ 
+   export const imagesend = async (request, response) => {
+ 
+     const id = request.params.id 
+     console.log(id)
+     try {
+ 
+       fs.writeFile(`imagem/perfil/${id}.png`, request.body, (error) => {
+         if (error) {
+           throw error;
+         }
+       });
+       await Posts.update({imagem_url: `imagem/perfil/${id}.png`} , { where:{id} });
+       response.status(201).json({ msg: "Posts Atualizado" });
+     } catch (error) {
+       console.error(error);
+       response.status(500).json({ Err: "Erro ao Atualizado os posts" });
+     }
+    };
