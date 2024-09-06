@@ -4,6 +4,11 @@ import { DataTypes } from "sequelize"
 const Postagens = conn.define(
     "postagens",
     {
+        id: {
+            type: DataTypes.UUID,
+            defaultValue: DataTypes.UUIDV4,
+            primaryKey: true,
+          },
         titulo: {
             type: DataTypes.STRING,
             allowNull: false,
