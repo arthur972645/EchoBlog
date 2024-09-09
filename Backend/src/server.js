@@ -7,9 +7,11 @@ import conn from "./config/conn.js"
 
 //Importar os modelos do banco de dados
 import Postagens from "./models/PostagensModels.js"
+import Usuarios from "./models/UsuariosModels.js"
 
 //*IMPORTAÇÃO DAS ROTAS
 import PostagemRoutes from "./routes/PostagensRoutes.js"
+import UsuariosRoutes from "./routes/UsuariosRoutes.js"
 
 
 const PORT = process.env.PORT || 3333
@@ -32,6 +34,7 @@ conn
 
 //utilizar rotas
 app.use("/postagens", PostagemRoutes)
+app.use("/usuarios", UsuariosRoutes)
 
 app.use((request, response) => {
     response.status(404).json({ message: "Rota não encontrada" });
