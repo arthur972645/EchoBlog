@@ -7,7 +7,7 @@ const Postagens = conn.define(
         id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
-            primaryKey: true,
+            primaryKey: true,   
           },
         titulo: {
             type: DataTypes.STRING,
@@ -19,21 +19,16 @@ const Postagens = conn.define(
             allowNull: false,
             required: true,
         },
-        dataPublicacao: {
-            type: DataTypes.DATE,
-            allowNull: false,
-            required: true,
-        },
         autor: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
             required: true,
         },
         imagem: {
             type: DataTypes.STRING,
             allowNull: true,
-            required: false,
-        },
+            required: false
+          },
     },
     {
         tableName: "postagens",

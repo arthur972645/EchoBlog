@@ -11,7 +11,7 @@ const cratePostagemSchema = z.object({
         .transform((txt) => txt.toLowerCase()),
     conteudo: z
         .string()
-        .min(10, {message: "O conteudo deve ter pelo menos 10 caracters"}),
+        .min(5, {message: "O conteudo deve ter pelo menos 10 caracters"}),
     autor: z
         .string()
         .min(1,{message: "O nome do autor precisa ter no meino 1 caracter"}),
@@ -29,7 +29,14 @@ export const cratePostagem = async(request, response) => {
         })
         return
     }
-    const { titulo, conteudo, autor, imagem } = request.body
+
+    const { titulo, conteudo, autor} = request.body
+    let imagem
+    if(request.file){
+      imagem = request.file.filename
+    }else{
+      imagem = "postagemDefault.png"
+    }
 
     const novaPostagem = {
         titulo, conteudo, autor, imagem
@@ -151,21 +158,21 @@ export const showall = async (request, response) => {
     }
    };
  
-   export const imagesend = async (request, response) => {
+  //  export const imagesend = async (request, response) => {
  
-     const id = request.params.id 
-     console.log(id)
-     try {
+  //    const id = request.params.id 
+  //    console.log(id)
+  //    try {
  
-       fs.writeFile(`imagem/perfil/${id}.png`, request.body, (error) => {
-         if (error) {
-           throw error;
-         }
-       });
-       await Posts.update({imagem_url: `imagem/perfil/${id}.png`} , { where:{id} });
-       response.status(201).json({ msg: "Posts Atualizado" });
-     } catch (error) {
-       console.error(error);
-       response.status(500).json({ Err: "Erro ao Atualizado os posts" });
-     }
-    };
+  //      fs.writeFile(`imagem/perfil/${id}.png`, request.body, (error) => {
+  //        if (error) {
+  //          throw error;
+  //        }
+  //      });
+  //      await Posts.update({imagem_url: `imagem/perfil/${id}.png`} , { where:{id} });
+  //      response.status(201).json({ msg: "Posts Atualizado" });
+  //    } catch (error) {
+  //      console.error(error);
+  //      response.status(500).json({ Err: "Erro ao Atualizado os posts" });
+  //    }
+  //   };
