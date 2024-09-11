@@ -48,22 +48,35 @@ export const createUsuarios = async(request, response) => {
         return
     }
     const { nome, email, senha, papel } = request.body
-
-    //CRIAR OS IFS PARA NAO PERMITIR MAIS DE UM EMAIL E SENHA
     
-    const saltRounds = 10;
-    const senhaCriptografada = await bcrypt.hash(senha, saltRounds);
-
-    const novoUusuario = {
-        nome, email, senha: senhaCriptografada, papel
-    }
-    try{
-        await Usuarios.create(novoUusuario)
-        response.status(201).json({message: "usuario criado com sucesso"})
-    }catch(error){
-        console.error(error)
-        response.status(500).json({message: "Erro ao cadastrar usuario na aplição"})
-    }
+    try {
+     
+        const emailExistente = await Usuarios.findOne({ where: { email } });
+        if (emailExistente) {
+     
+          response.status(409).json({ message: "E-mail já cadastrado" });
+          return;
+        }
+    
+        // Criptografa a senha
+        const saltRounds = 10;
+        const senhaCriptografada = await bcrypt.hash(senha, saltRounds);
+    
+        // Dados do novo usuário
+        const novoUsuario = {
+          nome,
+          email,
+          senha: senhaCriptografada,
+          papel,
+        };
+    
+        // Cria o novo usuário
+        await Usuarios.create(novoUsuario);
+        response.status(201).json({ message: "Usuário criado com sucesso" });
+      } catch (error) {
+        console.error(error);
+        response.status(500).json({ message: "Erro ao cadastrar usuário na aplicação" });
+      }
 }
 export const loginUsuarios = async (request, response) => {
     // Validação
