@@ -13,7 +13,7 @@ const createUserToken = async (usuario, request, response) => {
         papel: usuario.papel
     },
     //Chave que vai autentificar o token
-    "arthur972645" //senha
+    "arthur972645"//senha
   );
   //Retornar o token
     response.status(200).json({

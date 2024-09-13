@@ -185,8 +185,5 @@ export const updateUsuarios = async (request, response) => {
       response.status(500).json({ Err: "Erro ao Atualizado do usuario   " });
     }
 };
-    
-
-
 
 
