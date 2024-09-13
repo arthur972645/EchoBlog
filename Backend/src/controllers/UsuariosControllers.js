@@ -36,6 +36,23 @@ const loginUsuariosSchema = z.object({
           
 })
 
+const updateUsuariosSchema = z.object({
+    nome: z
+        .string()
+        .min(3,{message: "O nome deve ter pelo menos 3 caracteres"})
+        .transform((txt) => txt.toLowerCase()),
+    senha: z
+        .string()
+        .min(8, "A senha deve ter pelo menos 8 caracteres")
+        .regex(/[a-zA-Z]/, "A senha deve conter pelo menos uma letra")
+        .regex(/[0-9]/, "A senha deve conter pelo menos um número"),
+    email: z
+        .string()
+        .email("Formato do email invalido"),
+})
+
+
+
 export const createUsuarios = async(request, response) => {
     //validaçõa
     const bodyValidation = crateUsuariosSchema.safeParse(request.body)
@@ -114,5 +131,62 @@ export const loginUsuarios = async (request, response) => {
       }
     
 };
+export const updateUsuarios = async (request, response) => {
+
+    const id = request.params.id 
+    const bodyValidation = updateUsuariosSchema.safeParse(request.body)
+     
+    if(!bodyValidation.success){
+      response.status(400).json({msg: "Os dados recebidos do corpo são invalidos", detalhes: bodyValidation.error})
+      return
+    }
+  
+    const { nome, email , senha} = request.body;
+ 
+  
+    if (!nome) {
+      response.status(400).json({ err: "A tarefa é obirgatoria" });
+      return;
+    }
+    if (!email) {
+      response.status(400).json({ err: "A descricao é obirgatoria" });
+      return;
+    }
+    if (!senha ) {
+      response.status(400).json({ err: "A descricao é obirgatoria" });
+      return;
+    }
+ 
+
+    try {
+
+        const emailExistente = await Usuarios.findOne({ where: { email } });
+        if (emailExistente) {
+     
+          response.status(409).json({ message: "E-mail já cadastrado" });
+          return;
+        }
+
+        const saltRounds = 10;
+        const senhaCriptografada = await bcrypt.hash(senha, saltRounds);
+
+        const usuarioAtualizado = {
+            nome,
+            email,
+            senha: senhaCriptografada
+          };
+    
+
+          
+      await Usuarios.update(usuarioAtualizado , { where:{id} });
+      response.status(201).json({ msg: "usuario Atualizado" });
+    } catch (error) {
+      console.error(error);
+      response.status(500).json({ Err: "Erro ao Atualizado do usuario   " });
+    }
+};
+    
+
+
 
 
