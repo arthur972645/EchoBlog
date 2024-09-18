@@ -79,12 +79,20 @@ export const createUsuarios = async(request, response) => {
         const saltRounds = 10;
         const senhaCriptografada = await bcrypt.hash(senha, saltRounds);
     
+        let imagem
+        if(request.file){
+          imagem = request.file.filename
+        }else{
+          imagem = "postagemDefault.png"
+        }
+
         // Dados do novo usuário
         const novoUsuario = {
           nome,
           email,
           senha: senhaCriptografada,
           papel,
+          imagem
         };
     
         // Cria o novo usuário

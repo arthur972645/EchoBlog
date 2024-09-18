@@ -9,10 +9,9 @@ let db ={
 
 if(process.env.NODE_ENV === 'test'){
     db = {
-        bd: process.env.DB_TEST_DB,
-        user: process.env.DB_TEST_USER,
-        password: process.env.DB_TEST_PASSWORD
+      db: process.env.DB_TEST_DB,
+      user: process.env.DB_TEST_USER,
+      password: process.env.DB_TEST_PASSWORD
     }
 }
-
 export default db;
