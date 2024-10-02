@@ -4,7 +4,7 @@ import { DataTypes } from "sequelize";
 const Usuarios = conn.define(
     "usuarios",
     {
-        id: {
+        usuario_id: {
             type: DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true,
@@ -17,7 +17,10 @@ const Usuarios = conn.define(
         email: {
             type: DataTypes.STRING,
             allowNull: false,
-            required: true,
+            unique: true,
+            validate: {
+                isEmail: true
+            }
         },
         senha: {
             type: DataTypes.STRING,

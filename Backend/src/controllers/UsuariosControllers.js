@@ -16,11 +16,11 @@ const crateUsuariosSchema = z.object({
         .email("Formato do email invalido"),
     senha: z
         .string()
-        .min(8, "A senha deve ter pelo menos 8 caracteres")
-        .regex(/[a-zA-Z]/, "A senha deve conter pelo menos uma letra")
-        .regex(/[0-9]/, "A senha deve conter pelo menos um número"),
-    papel: z
-        .enum(["leitor", "administrador", "autor"]),
+        .min(8, {message: "A senha deve ter pelo menos 8 caracteres"})
+        .regex(/[a-zA-Z]/,{message: "A senha deve ter pelo menos 1 numero"})
+        .regex(/[0-9]/, {message: "A senha deve ter pelo menos 1 letra"}),
+    // papel: z
+    //     .enum(["leitor", "administrador", "autor"]),
           
 })
 
@@ -55,29 +55,21 @@ const updateUsuariosSchema = z.object({
 
 export const createUsuarios = async(request, response) => {
     //validaçõa
-    const bodyValidation = crateUsuariosSchema.safeParse(request.body)
+    const createValidation = crateUsuariosSchema.safeParse(request.body)
 
-    if(!bodyValidation.success){
-        response.status(400).json({
-            message: "Os dados recebidor do corpo da aplicação são invalidos",
-            detalhes: formatZodError(bodyValidation.error)
-        })
+    if(!createValidation.success){
+        response
+          .status(400)
+          .json({
+            error:formatZodError(createValidation.error)
+          })
         return
     }
     const { nome, email, senha, papel } = request.body
     
-    try {
-     
-        const emailExistente = await Usuarios.findOne({ where: { email } });
-        if (emailExistente) {
-     
-          response.status(409).json({ message: "E-mail já cadastrado" });
-          return;
-        }
-    
         // Criptografa a senha
-        const saltRounds = 10;
-        const senhaCriptografada = await bcrypt.hash(senha, saltRounds);
+        const salt = bcrypt.genSaltSync(12);
+        const senhaCriptografada = await bcrypt.hashSync(senha, salt);
     
         let imagem
         if(request.file){
@@ -94,7 +86,12 @@ export const createUsuarios = async(request, response) => {
           papel,
           imagem
         };
-    
+      try {
+        const verificaEmail= await Usuarios.findOne({ where: { email } });
+        if (verificaEmail) {
+          response.status(404).json({ message: "E-mail já cadastrado" });
+          return;
+        }
         // Cria o novo usuário
         await Usuarios.create(novoUsuario);
         response.status(201).json({ message: "Usuário criado com sucesso" });

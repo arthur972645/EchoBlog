@@ -33,7 +33,7 @@ app.use("/public", express.static(path.join(__dirname,"public")))
 
 //Conexão com o banco
 conn
-.sync()
+.sync(/*{force: true}*/)
 .then(() => {
     app.listen(PORT, () => {
         console.log(`Servidor on PORT: ${PORT}`)

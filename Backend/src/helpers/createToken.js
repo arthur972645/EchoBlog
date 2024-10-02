@@ -7,7 +7,6 @@ const createUserToken = async (usuario, request, response) => {
   //o jwt.sing cria o token
   const token = jwt.sign({
         id: usuario.id,
-        nome: usuario.nome,
         email: usuario.email,
         senha: usuario.senha,
         papel: usuario.papel
