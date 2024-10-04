@@ -65,18 +65,20 @@ export const createUsuarios = async(request, response) => {
           })
         return
     }
-    const { nome, email, senha, papel } = request.body
+    const { nome, email, senha} = request.body
+
+    const papel = request.papel || "leitor";
     
         // Criptografa a senha
         const salt = bcrypt.genSaltSync(12);
         const senhaCriptografada = await bcrypt.hashSync(senha, salt);
     
-        let imagem
-        if(request.file){
-          imagem = request.file.filename
-        }else{
-          imagem = "postagemDefault.png"
-        }
+        // let imagem
+        // if(request.file){
+        //   imagem = request.file.filename
+        // }else{
+        //   imagem = "postagemDefault.png"
+        // }
 
         // Dados do novo usuário
         const novoUsuario = {
@@ -84,16 +86,22 @@ export const createUsuarios = async(request, response) => {
           email,
           senha: senhaCriptografada,
           papel,
-          imagem
         };
       try {
         const verificaEmail= await Usuarios.findOne({ where: { email } });
         if (verificaEmail) {
-          response.status(404).json({ message: "E-mail já cadastrado" });
+          response.status(401).json({ message: "E-mail já cadastrado" });
           return;
         }
         // Cria o novo usuário
         await Usuarios.create(novoUsuario);
+
+        const selectNovoUsuario = await Usuarios.findOne({ 
+          where: {email}, 
+          raw: true
+        })
+
+        await gerarToken(selectNovoUsuario, request, response);
         response.status(201).json({ message: "Usuário criado com sucesso" });
       } catch (error) {
         console.error(error);
@@ -118,17 +126,17 @@ export const loginUsuarios = async (request, response) => {
     if(!senha){
         return response.status(401).json({message: "A senha é obrigatoria"})
     }
-
-    const usuario = await Usuarios.findOne({ where: { email } });
-
-    if (!usuario) {
-        return response.status(404).json({ message: "Usuário não encontrado" });
-    }
-    const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
-    if(!senhaCorreta){
-        return response.status(401).json({ message: "senha inválida" });
-    }
     try {
+      const usuario = await Usuarios.findOne({ where: { email } });
+
+      if (!usuario) {
+          return response.status(404).json({ message: "Usuário não encontrado" });
+      }
+      const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
+      if(!senhaCorreta){
+          return response.status(401).json({ message: "senha inválida" });
+      }
+    
         await gerarToken(usuario, request, response);
       } catch (error) {
         console.error(error);

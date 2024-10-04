@@ -11,8 +11,8 @@ import imageUpload from "../helpers/image-uploud.js";
 
 const router = Router()
 
-router.post("/create",imageUpload.single("imagem"), createUsuarios)
-router.get("/login", loginUsuarios)
+router.post("/create"/*,imageUpload.single("imagem")*/, createUsuarios)
+router.post("/login", loginUsuarios)
 router.put("/atualizar/:id", updateUsuarios)
 
 export default router;

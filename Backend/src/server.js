@@ -31,6 +31,10 @@ app.use(express.json());
 
 app.use("/public", express.static(path.join(__dirname,"public")))
 
+//utilizar rotas
+app.use("/postagens", PostagemRoutes)
+app.use("/usuarios", UsuariosRoutes)
+
 //Conexão com o banco
 conn
 .sync(/*{force: true}*/)
@@ -41,9 +45,7 @@ conn
 })
 .catch((error) => console.error(error))
 
-//utilizar rotas
-app.use("/postagens", PostagemRoutes)
-app.use("/usuarios", UsuariosRoutes)
+
 
 app.use((request, response) => {
     response.status(404).json({ message: "Rota não encontrada" });

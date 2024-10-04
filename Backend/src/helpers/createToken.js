@@ -5,23 +5,22 @@ import jwt from "jsonwebtoken";
 const createUserToken = async (usuario, request, response) => {
   //criar token do usuario, onde no token vai ter o nome e o id do usuario
   //o jwt.sing cria o token
-  const token = jwt.sign({
-        id: usuario.id,
-        email: usuario.email,
-        senha: usuario.senha,
-        papel: usuario.papel
+
+  const token = jwt.sign(
+    {
+      nome: usuario.nome,
+      id: usuario.id
     },
-    //Chave que vai autentificar o token
-    "arthur972645"//senha
-  );
-  //Retornar o token
-    response.status(200).json({
-        message: "Você está logado!",
-        token: token,
-        usuarioId: usuario.id,
-      });
- 
- 
-};
+    process.env.TOKEN_PASSAWORD,
+    {
+      expiresIn: "12h",
+    }
+  )
+  response.status(200).json({
+    message: "voce esta logado",
+    token: token,
+    usuarioId: usuario.id
+  })
+}
 
 export default createUserToken

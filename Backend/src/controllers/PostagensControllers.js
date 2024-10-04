@@ -1,7 +1,9 @@
 import Postagens from "../models/PostagensModels.js"
 import { z } from "zod"
-import formatZodError from "../helpers/formatZoderror.js"
 import { request, response } from "express"
+
+import getToken from "../helpers/getToken.js"
+import formatZodError from "../helpers/formatZoderror.js"
 
 //Validações com o zod
 const cratePostagemSchema = z.object({
@@ -19,6 +21,10 @@ const cratePostagemSchema = z.object({
 
 
 export const cratePostagem = async(request, response) => {
+
+    const token = getToken(request)
+    const usuario = await getUsuarioByToken(token)
+
     //Validação:
     const bodyValidation = cratePostagemSchema.safeParse(request.body)
     
